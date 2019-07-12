@@ -17,6 +17,9 @@ This package is aim to find biomarkers via integrative deep learning. We propose
 ```{r cars}
 summary(cars)
 ```
+## Functions
+
+
 
 ## Examples 
 
