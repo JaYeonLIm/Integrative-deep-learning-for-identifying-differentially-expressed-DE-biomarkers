@@ -29,6 +29,17 @@ This package is aim to find biomarkers via integrative deep learning. We propose
 
 `epsilon_iterations` : threshold in training
 
+## Functions
+
+`INTEGRATE_PREDICTORS(x, integration_index)` : make 'integratedX'
+
+`LAMBDAS_GIVEN_LAMBDA_MAX(lambda_max, number_lambdas,epsilon_lambda)` : make lambda lists. Optimal lamda is selected in the function `MODEL_SELECTION`.
+
+`TRAIN_GANN(sm, lambda)`: train the models with training datasets. It contains the functions `FEEDFOWARD`,`BACKPROP_BETA` and `BACKPROP_VW`.
+
+`MODEL_SELECTION(train, validation, ms, fits)` : First,`GANN_TEST(newx, newy, sm)`functions test the accuracy of trained models. Then, find the optimal model (opitmal lambda).
+
+
 ## Examples 
 
 First, we need to run functions which are components of main function `INTEGRATED_GANN`. 
