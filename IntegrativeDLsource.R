@@ -657,7 +657,7 @@ result=INTEGRATED_GANN(DList, y, number_of_function, out_fct,
                        maxiter = 500, ms, epsilon_iterations = 1e-5)
 save(result,file="bcresult.Rdata")
 selected.gene<-gene_name[c(result$index_active)]
-selected.gene
+selected.gene ## Selected genes are potential biomarkers.
 
 
 
