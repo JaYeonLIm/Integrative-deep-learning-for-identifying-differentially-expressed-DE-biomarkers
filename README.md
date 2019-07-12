@@ -7,7 +7,8 @@ This package is aim to find biomarkers via integrative deep learning. We propose
 
 ## Arguments
 
-`DList` 
+`DList` : a list. It consists of multiple datasets which have same dimension. We use the function `PREDICTOR(DList)` to make the list to predictor of models. 
+ddd
 
 
 
