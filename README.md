@@ -11,8 +11,23 @@ This package is aim to find biomarkers via integrative deep learning. We propose
 
 `y`: a matrix. It contains clinical data which consisits of 1 or 0 as the model aims at classification.
 
+`number_of_function`:	the number of activation function in each integrated X 
 
+`out_fct`	: options - "ReLU", "linear", "logistic"
 
+`err_fct` :	Regression - "sse" , Classification - "ce"
+
+`lrate` : learning rate	
+
+`number_lambdas`:	the number of lamdas
+
+`epsilon_lambda` :	the minimum value of lambda
+
+`maxiter`:	maximum iterations
+
+`ms` :	"cv" - cross validation
+
+`epsilon_iterations` : threshold in training
 
 ```{r cars}
 summary(cars)
