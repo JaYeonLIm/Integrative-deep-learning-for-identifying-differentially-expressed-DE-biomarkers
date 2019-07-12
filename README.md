@@ -29,10 +29,6 @@ This package is aim to find biomarkers via integrative deep learning. We propose
 
 `epsilon_iterations` : threshold in training
 
-## Functions
-
-
-
 ## Examples 
 
 First, we need to run functions which are components of main function `INTEGRATED_GANN`. 
@@ -47,7 +43,7 @@ library(e1071)
 library(MCMCpack)
 library(penalized)
 library(glmnet)
-#-----------functions
+
 PREDICTOR = function(DList){
   tmp = c()
   for(i in 1:length(DList)){
@@ -57,7 +53,7 @@ PREDICTOR = function(DList){
   return(x)
 }
 
-#-----------
+
 INTEGRATE_INDEX=function(DList){
   G = nrow(DList[[1]])
   K = length(DList)
@@ -624,12 +620,107 @@ GANN_TEST = function(newx, newy, sm)
 }
 
 ```
+Then we run the main function.
 
-
-
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+INTEGRATED_GANN = function(DList, y, number_of_function, out_fct,
+                           err_fct, lrate, number_lambdas,
+                           lambda_max, weights_on_input_layer, epsilon_lambda,
+                           maxiter = 500, ms="cv", epsilon_iterations = 1e-5)
+{
+  integration_index = INTEGRATE_INDEX(DList)
+  x = PREDICTOR(DList)
+  ##Make setup function 
+  sm = SETUPd(x, y, number_of_function, out_fct, err_fct,
+              integration_index, lrate, weights_on_input_layer,
+              maxiter, epsilon_iterations)
+  ## Integration_index = list of indices that indicate which predictors are integrated
+  integratedX = INTEGRATE_PREDICTORS(x, integration_index)  
+  ##Split the data into train / validation
+  data_split = DATA_SPLIT(y, integratedX, ms="cv", train_rate = 0.7)  
+  sm$integratedX =data_split$train$integratedX
+  sm$y=data_split$train$response
+  sm$n = length(data_split$train$response)  
+  ## Generate list of lambda
+  lambda_list = LAMBDAS_GIVEN_LAMBDA_MAX(lambda_max, number_lambdas, epsilon_lambda)
+  sm$lambda_list = lambda_list
+  sm = FUNCTION_SELECTION(sm)
+  sm = SYSTEMATIC_INITIAL_WEIGHT_GANN(sm)
+  C_matrices = list()   
+  ## Make empty list to save results for each lambda
+  training_result = list()
+  sm$beta_C=sm$beta_C
+  for (lambdas in 1 : number_lambdas)
+  {
+    cat("===============================================", "\n")
+    cat(lambdas, "th lambda", lambda_list[lambdas], "\n")
+    training_result[[lambdas]] = TRAIN_GANN(sm, lambda_list[lambdas])
+    training_result[[lambdas]]$dimension = LIVE_PARAMETERS(training_result[[lambdas]],
+                                                           weights_on_input_layer)
+    cat("Beta =", training_result[[lambdas]]$beta, "\n")
+    cat("Number of live parameters = ", training_result[[lambdas]]$dimension, "\n")
+    cat("Corresponding Training RSS =", training_result[[lambdas]]$loss_value, "\n")
+    
+    for(i in 1:sm$K)
+    {
+      sm$beta_C[[i]][lambdas] = training_result[[lambdas]]$beta[i]
+    }
+    
+    ## Pass estimated coefficients to list sm, so that at next lambda, those becomes
+    ## initial weights
+    sm$bias = training_result[[lambdas]]$bias
+    sm$beta = training_result[[lambdas]]$beta
+    sm$v = training_result[[lambdas]]$v
+    sm$w = training_result[[lambdas]]$w
+    sm$index_active = training_result[[lambdas]]$index_active
+    ## If we want to check the fit of each consolidated values, these five lines should be put
+    beta_vector = as.vector(training_result[[lambdas]]$beta)
+    if (training_result[[lambdas]]$dimension == 1)
+      C_matrices[[lambdas]] = matrix(0, sm$n, sm$K)
+    else if(length(beta_vector) == 1)
+      C_matrices[[lambdas]] = training_result[[lambdas]]$C %*% matrix(beta_vector)
+    else
+      C_matrices[[lambdas]] = training_result[[lambdas]]$C %*% diag(beta_vector)
+  }
+  model_search = MODEL_SELECTION(data_split$train, data_split$validation, ms,
+                                 training_result)
+  optimal_fit = model_search$opt_index
+  opt_model = training_result[[optimal_fit]]
+  opt_model$testdata_fitted = model_search$test_fit
+  opt_model$save_fits = model_search$save_fits
+  opt_model$C_matrices = C_matrices
+  opt_model$beta_C=sm$beta_C
+  opt_model$data_y = data_split$validation$response
+  cat("===============================================", "\n")
+  cat("Model selection criterion =", ms, "\n")
+  cat("Optimized at", optimal_fit, "th iteration", "\n")
+  cat("Optimal lambda = ", opt_model$lambda, "\n")
+  cat("Corresponding Test rss =", model_search$rss, "\n")
+  cat("===============================================", "\n")
+  return(opt_model)
+}
 ```
+We can find biomarkers (`selected.gene`) by following step.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+DList<-get(load("BComics.Rdata"))
+y<-read.csv("y.csv")
+y<-as.matrix(y)
+out_fct="logistic" # out_fct: ReLU, linear, logistic
+err_fct="ce"
+lrate=0.001
+weights_on_input_layer="TRUE" 
+maxiter=900
+lambda_max=1
+number_lambdas=20
+epsilon_lambda=0.001
+number_of_function = rep(5,828)
+ms="cv"
+result=INTEGRATED_GANN(DList, y, number_of_function, out_fct,
+                       err_fct,lrate, number_lambdas,
+                       lambda_max, weights_on_input_layer, epsilon_lambda,
+                       maxiter = 500, ms, epsilon_iterations = 1e-5)
+save(result,file="bcresult.Rdata")
+selected.gene<-gene_name[c(result$index_active)]
+selected.gene
+```
