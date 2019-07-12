@@ -9,6 +9,31 @@ library(MCMCpack)
 library(penalized)
 library(glmnet)
 #-----------functions
+PREDICTOR = function(DList){
+  tmp = c()
+  for(i in 1:length(DList)){
+  tmp = rbind(tmp,DList[[i]])
+  }
+  x = t(tmp)
+  return(x)
+}
+#------------------
+
+INTEGRATE_INDEX=function(DList){
+  G = nrow(DList[[1]])
+  K = length(DList)
+  integration_index = list()
+  for (i in 1:G) {
+    integration_index[[i]] =c(i)
+    for (k in 2:K){
+      integration_index[[i]]= append(integration_index[[i]],i+(k-1)*G)
+    }
+  }
+  return(integration_index)
+}
+
+#------------------
+
 SETUPd = function (x, y, number_of_function, out_fct, err_fct,
                    integration_index, lrate, weights_on_input_layer,
                    maxiter, epsilon_iterations = 1e-5)
@@ -49,6 +74,7 @@ INTEGRATE_PREDICTORS = function(x, integration_index)
   return(integratedX)
 }
 
+#----------------------------
 DATA_SPLIT = function(response, predictors, ms, train_rate = 0.7)      
 {
   number_integratedX = length(predictors)   
