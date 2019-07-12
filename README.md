@@ -1,4 +1,5 @@
 # Integrative-deep-learning-for-identifying-differentially-expressed-DE-biomarkers
+## Description
 This package is aim to find biomarkers via integrative deep learning. We propose adding an integrated layer to the deep learning structure, which would enable the effective analysis of genetic data as well as the discovery of significant biomarkers of disease. "INTEGRATED_GANN" is main fucntion where we train datasets and test the performance of trained model.
 
 ```{r setup, include=FALSE}
