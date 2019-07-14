@@ -43,7 +43,7 @@ This package is aim to find biomarkers via integrative deep learning. We propose
 ## Examples 
 
 First, we need to copy the pacakge "DeepOmics2" in current dirrectory. 
-Then, 
+Then, load the package. 
 ```{r}
 library(DeepOmics)
 ```
