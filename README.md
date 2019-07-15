@@ -53,19 +53,19 @@ We can find biomarkers (`selected.gene`) by following step.
 
 ```{r}
 # Reference arguments 
-DList<-get(load("BComics.Rdata"))
-y<-read.csv("y.csv")
-y<-as.matrix(y)
-out_fct="logistic" # out_fct: ReLU, linear, logistic
-err_fct="ce"
-lrate=0.001 #learning rate
+DList<-get(load("BComics.Rdata"))   # load multiple gene expression datasets
+y<-read.csv("y.csv")                # clinical data which consisits of 1 or 0
+y<-as.matrix(y)            
+out_fct="logistic"                  # out_fct: ReLU, linear, logistic
+err_fct="ce"                        # "sse", "ce"
+lrate=0.001                         # learning rate
 weights_on_input_layer="TRUE" 
-maxiter=900
+maxiter=900                         # maximum iterations
 lambda_max=1
-number_lambdas=20
-epsilon_lambda=0.001
-number_of_function = rep(5,828)
-ms="cv"
+number_lambdas=20                   # the number of lamdas
+epsilon_lambda=0.001                # threshold in training
+number_of_function = rep(5,828)     # the number of activation function in each integrated X 
+ms="cv"                             # 'cv' : cross validation
 
 # Reference Functions
 result=INTEGRATED_GANN(DList, y, number_of_function, out_fct,
