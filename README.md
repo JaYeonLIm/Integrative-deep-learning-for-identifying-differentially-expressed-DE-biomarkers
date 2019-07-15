@@ -52,7 +52,7 @@ library(DeepOmics2)
 We can find biomarkers (`selected.gene`) by following step.
 
 ```{r}
-# Reference arguments 
+# Reference Arguments 
 DList<-get(load("BComics.Rdata"))   # load multiple gene expression datasets
 y<-read.csv("y.csv")                # clinical data which consisits of 1 or 0
 y<-as.matrix(y)            
