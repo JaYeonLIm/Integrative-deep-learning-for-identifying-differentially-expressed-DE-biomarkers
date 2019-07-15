@@ -31,11 +31,11 @@ This package is aim to find biomarkers via integrative deep learning. We propose
 
 ## Functions
 
-`INTEGRATE_PREDICTORS(x, integration_index)` : make 'integratedX'
+`INTEGRATE_PREDICTORS(x, integration_index)` : makes 'integratedX'
 
-`LAMBDAS_GIVEN_LAMBDA_MAX(lambda_max, number_lambdas,epsilon_lambda)` : make lambda lists. Optimal lamda is selected in the function `MODEL_SELECTION`.
+`LAMBDAS_GIVEN_LAMBDA_MAX(lambda_max, number_lambdas,epsilon_lambda)` : makes lambda lists. Optimal lamda is selected in the function `MODEL_SELECTION`.
 
-`TRAIN_GANN(sm, lambda)`: train the models with training datasets. It contains the functions `FEEDFOWARD`,`BACKPROP_BETA` and `BACKPROP_VW`.
+`TRAIN_GANN(sm, lambda)`: trains the models with training datasets. It contains the functions `FEEDFOWARD`,`BACKPROP_BETA` and `BACKPROP_VW`.
 
 `MODEL_SELECTION(train, validation, ms, fits)` : First,`GANN_TEST(newx, newy, sm)`functions test the accuracy of trained models. Then, find the optimal model (opitmal lambda).
 
@@ -45,19 +45,20 @@ This package is aim to find biomarkers via integrative deep learning. We propose
 First, we need to copy the pacakge "DeepOmics2" in current dirrectory. 
 Then, load the package. 
 ```{r}
-library(DeepOmics)
+library(DeepOmics2)
 ```
 
 
 We can find biomarkers (`selected.gene`) by following step.
 
 ```{r}
+# Reference arguments 
 DList<-get(load("BComics.Rdata"))
 y<-read.csv("y.csv")
 y<-as.matrix(y)
 out_fct="logistic" # out_fct: ReLU, linear, logistic
 err_fct="ce"
-lrate=0.001
+lrate=0.001 #learning rate
 weights_on_input_layer="TRUE" 
 maxiter=900
 lambda_max=1
@@ -65,6 +66,7 @@ number_lambdas=20
 epsilon_lambda=0.001
 number_of_function = rep(5,828)
 ms="cv"
+# Reference Functions
 result=INTEGRATED_GANN(DList, y, number_of_function, out_fct,
                        err_fct,lrate, number_lambdas,
                        lambda_max, weights_on_input_layer, epsilon_lambda,
