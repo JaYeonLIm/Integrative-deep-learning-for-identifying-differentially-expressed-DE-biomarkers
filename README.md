@@ -65,7 +65,7 @@ lambda_max=1
 number_lambdas=20                   # the number of lamdas
 epsilon_lambda=0.001                # threshold in training
 number_of_function = rep(5,828)     # the number of activation function in each integrated X 
-ms="cv"                             # 'cv' : cross validation
+ms="cv"                             # "cv" : cross validation
 
 # Reference Functions
 result=INTEGRATED_GANN(DList, y, number_of_function, out_fct,
